@@ -4,7 +4,8 @@ def throw(err_msg):
 
 def till_and_plant(entity):
 	def _tp():
-		till()
+		if get_ground_type() != Grounds.Soil:
+			till()
 		plant(entity)
 	return _tp
 
