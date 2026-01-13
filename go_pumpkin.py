@@ -1,52 +1,68 @@
-import utils
+import utils_global
+import utils_cocktail
+import multi_drone
+import ppz
 
 def go():
-	while True:
-		clear()
-		first_season()
+	def one_drone(id):
+		def check_dead():
+			def unit():
+				while get_status() == 0:
+					pass
+				s = get_status()
+				if s == -1:
+					plant(Entities.Pumpkin)
+					dead_list.append((ppz.pos(), True))
+			utils_cocktail.one_round(y1, y2, unit)
+		def recheck():
+			for i in range(len(dead_list)):
+				target_pos, target_dead = dead_list[i]
+				if (not target_dead): # 上几轮中被修复
+					continue
+				utils_global.move_to(target_pos)
+				while get_status() == 0:
+					pass
+				s = get_status()
+				if s == 1:
+					dead_list[i] = (target_pos, False)
+				else:
+					plant(Entities.Pumpkin)
+		def has_dead():
+			for _, target_dead in dead_list:
+				if target_dead:
+					return True
+			return False
+		def job():
+			utils_global.move_to((0, y1))
+			check_dead()
+			while has_dead():
+				recheck()
 
-def first_season():
-	def till_and_plant():
-		till()
+		y1 = id * lines_per_drone
+		y2 = y1 + lines_per_drone - 1
+		dead_list = []
+		return job
+
+	def plant_pumpkin():
 		plant(Entities.Pumpkin)
-	def first_check_dead():
-		# 第一遍时，不可能没熟：只可能“正常熟”或“枯萎”
-		if get_status() == -1:
-			plant(Entities.Pumpkin)
-			dead_list.append((get_pos_x(), get_pos_y()))
 
-	def check_dead(pos):
-		utils.slow_move(pos)
-		while get_status() == 0:
-			change_hat(Hats.Brown_Hat)
-			quick_print("wait for recheck (200 tick)")
-		if get_status() == 1:
-			return pos
-		else:
-			plant(Entities.Pumpkin)
+	clear()
+	WS = get_world_size()
+	MD = max_drones()
+	lines_per_drone = WS / MD
 
-	dead_list = []
-	# step 1: round(till and first plant)
-	utils.one_round(till_and_plant)
-	# step 2: round(first_check_dead and replant)
-	utils.one_round(first_check_dead)
-	quick_print("first round, dead_list length: ", len(dead_list))
-	# step 3: loop(recheck_dead)
-	while len(dead_list) > 0:
-		good_list = []
-		for d in dead_list:
-			maybe_good = check_dead(d)
-			if maybe_good != None:
-				good_list.append(maybe_good)
-		quick_print("good_list length", len(good_list))
-		for good in good_list:
-			dead_list.remove(good)
-		quick_print("dead_list length", len(dead_list))
-	# step 4: 大丰收
-	harvest()
+	# 第一遍 till 和 plant
+	multi_drone.one_round(MD, WS, ppz.till_and_plant(Entities.Pumpkin))
+	while True:
+		performance_start = get_time()
+		# 多无人机修复
+		multi_drone.special_job(MD, one_drone)
+		# 大丰收！
+		harvest()
+		# 下一轮种植
+		multi_drone.one_round(MD, WS, plant_pumpkin)
 
-def one_season():
-	pass
+		quick_print("一轮总用时", get_time() - performance_start)
 
 def get_status():
 	ch = can_harvest()
