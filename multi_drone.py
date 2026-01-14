@@ -5,6 +5,8 @@ import MOVE
 def one_line_one_drone(unit_job):
 	WS = get_world_size()
 	MD = max_drones()
+	if MD != WS:
+		ppz.throw()
 
 	def one_line(y):
 		def _():
@@ -13,8 +15,6 @@ def one_line_one_drone(unit_job):
 				unit_job()
 				move(East)
 		return _
-	if MD != WS:
-		ppz.throw()
 	worker_list = []
 	for y in range(MD - 1):
 		worker_list.append(spawn_drone(one_line(y)))
