@@ -2,7 +2,7 @@ import ppz
 import MOVE
 
 # 每行派一个无人机（仅用于 WS == MD，无人机在 (0, 0) 的情况）
-def one_line_one_drone(unit_job):
+def danger__one_line_one_drone(unit_job):
 	WS = get_world_size()
 	MD = max_drones()
 	MD_HALF = MD / 2
