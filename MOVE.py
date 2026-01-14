@@ -1,6 +1,3 @@
-WS = get_world_size()
-WS_HALF = WS / 2
-
 # y 方向上移动 abs(count) 个单位
 # 正数 -> North; 负数 -> South
 def y(count):
@@ -23,6 +20,9 @@ def x(count):
 
 # 移动到 destination
 def to_y(destination):
+	WS = get_world_size()
+	WS_HALF = WS / 2
+
 	count = destination - get_pos_y()
 	distance = abs(count)
 	worm_hole = distance > WS_HALF
@@ -38,6 +38,9 @@ def to_y(destination):
 			m(South, distance)
 
 def to_x(destination):
+	WS = get_world_size()
+	WS_HALF = WS / 2
+
 	count = destination - get_pos_x()
 	distance = abs(count)
 	worm_hole = distance > WS_HALF

@@ -1,27 +1,29 @@
-import utils_cocktail
-import utils_global
+import ppz
+import MOVE
 
-def one_round(drone_num, WS, unit_job):
-	lines_per_drone = WS / drone_num
-	def job(did):
-		y1 = did * lines_per_drone
-		y2 = y1 + lines_per_drone - 1
-		utils_global.move_to((0, y1))
+# 每行派一个无人机（仅用于 WS == MD 的情况）
+def one_line_one_drone(unit_job):
+	WS = get_world_size()
+	MD = max_drones()
+
+	def one_line(y):
 		def _():
-			utils_cocktail.one_round(y1, y2, unit_job)
+			MOVE.to_y(y)
+			for _ in range(WS):
+				unit_job()
+				move(East)
 		return _
-
-	special_job(drone_num, job)
-
-def special_job(drone_num, job_factory):
+	if MD != WS:
+		ppz.throw()
 	worker_list = []
-	for id in range(drone_num - 1):
-		d = spawn_drone(job_factory(id))
-		worker_list.append(d)
-	job_factory(drone_num - 1)()
+	for y in range(MD - 1):
+		worker_list.append(spawn_drone(one_line(y)))
+	one_line(MD - 1)()
+	wait(worker_list)
 
-	for d in worker_list:
-		wait_for(d)
+def wait(list):
+	for worker in list:
+		wait_for(worker)
 
 def drone_factory(job):
 	worker_list = []
