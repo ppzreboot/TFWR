@@ -70,3 +70,8 @@ def m(orientation, count):
 def go(destination):
 	to_x(destination[0])
 	to_y(destination[1])
+
+def next():
+	move(East)
+	if get_pos_x() == 0:
+		move(North)
