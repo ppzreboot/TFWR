@@ -101,3 +101,44 @@ def go():
 
 	spawn_drone(worker_sunflower(12, 14))
 	worker_sunflower(15, 17)()
+
+def hay():
+	def worker(y):
+		def _():
+			while get_pos_y() != y:
+				move(North)
+			while True:
+				harvest()
+				move(East)
+		return _
+
+	# 作准备
+	clear()
+	MD = max_drones()
+	for y in range(MD - 1):
+		spawn_drone(worker(y))
+	spawn_drone(worker(MD))
+
+def wood():
+	def worker(y):
+		def _():
+			while get_pos_y() != y:
+				move(North)
+			
+			while True:
+				harvest()
+				if (get_pos_x() + get_pos_y()) % 2 == 0:
+					plant(Entities.Tree)
+				else:
+					plant(Entities.Bush)
+				while get_water() < .7:
+					use_item(Items.Water)
+				move(East)
+		return _
+
+	# 作准备
+	clear()
+	MD = max_drones()
+	for y in range(MD - 1):
+		spawn_drone(worker(y))
+	worker(MD - 1)()
