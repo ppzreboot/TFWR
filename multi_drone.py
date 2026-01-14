@@ -22,3 +22,17 @@ def special_job(drone_num, job_factory):
 
 	for d in worker_list:
 		wait_for(d)
+
+def drone_factory(job):
+	worker_list = []
+	def new():
+		while True:
+			worker = spawn_drone(job)
+			if worker != None:
+				worker_list.append(worker)
+				return worker
+	def wait_all():
+		while len(worker_list):
+			wait_for(worker_list.pop(0))
+
+	return new, wait_all
