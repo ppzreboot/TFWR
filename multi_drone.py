@@ -1,11 +1,12 @@
 import ppz
 import MOVE
 
-# 每行派一个无人机（仅用于 WS == MD 的情况）
+# 每行派一个无人机（仅用于 WS == MD，无人机在 (0, 0) 的情况）
 def one_line_one_drone(unit_job):
 	WS = get_world_size()
 	MD = max_drones()
-	if MD != WS:
+	MD_HALF = MD / 2
+	if MD != WS or ppz.pos() != (0, 0):
 		ppz.throw()
 
 	def one_line(y):
@@ -16,9 +17,12 @@ def one_line_one_drone(unit_job):
 				move(East)
 		return _
 	worker_list = []
-	for y in range(MD - 1):
-		worker_list.append(spawn_drone(one_line(y)))
-	one_line(MD - 1)()
+
+	worker_list.append(spawn_drone(one_line(MD_HALF)))
+	for y in range(1, MD_HALF): # [1, MD_HALF - 1]
+		worker_list.append(spawn_drone(one_line(MD_HALF - y)))
+		worker_list.append(spawn_drone(one_line(MD_HALF + y)))
+	one_line(0)()
 	wait(worker_list)
 
 def wait(list):

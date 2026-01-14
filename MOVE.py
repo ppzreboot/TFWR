@@ -20,10 +20,13 @@ def x(count):
 
 # 移动到 destination
 def to_y(destination):
+	count = destination - get_pos_y()
+	if count == 0:
+		return
+
 	WS = get_world_size()
 	WS_HALF = WS / 2
 
-	count = destination - get_pos_y()
 	distance = abs(count)
 	worm_hole = distance > WS_HALF
 	if count > 0: # 目的地在北方
@@ -38,10 +41,13 @@ def to_y(destination):
 			m(South, distance)
 
 def to_x(destination):
+	count = destination - get_pos_y()
+	if count == 0:
+		return
+
 	WS = get_world_size()
 	WS_HALF = WS / 2
 
-	count = destination - get_pos_x()
 	distance = abs(count)
 	worm_hole = distance > WS_HALF
 	if count > 0: # 目的地在东方
