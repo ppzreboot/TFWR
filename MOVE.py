@@ -41,7 +41,7 @@ def to_y(destination):
 			m(South, distance)
 
 def to_x(destination):
-	count = destination - get_pos_y()
+	count = destination - get_pos_x()
 	if count == 0:
 		return
 
