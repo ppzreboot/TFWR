@@ -7,7 +7,8 @@ def go():
 		circle()
 
 def prepare():
-	set_world_size(6)
+	clear()
+	# set_world_size(6)
 	slow_till()
 	change_hat(Hats.Dinosaur_Hat)
 
@@ -18,18 +19,28 @@ def slow_till():
 		MOVE.next()
 
 def circle():
+	def next(orientation):
+		if move(orientation) == False:
+			change_hat(Hats.Green_Hat) # 大丰收
+			change_hat(Hats.Dinosaur_Hat) # 新一轮
+			move(orientation)
 	WS = get_world_size()
-	MOVE.y(WS - 1) # 左上角
+	while get_pos_y() != WS - 1: # 左上角
+		next(North)
 
 	while get_pos_x() != WS - 2:
-		move(East)
-		MOVE.y(2 - WS)
-		move(East)
-		MOVE.y(WS - 2)
+		next(East)
+		while get_pos_y() > 1:
+			next(South)
+		next(East)
+		while get_pos_y() < WS - 1:
+			next(North)
 
-	move(East) # 右上角
-	MOVE.y(1 - WS) # 右下角
-	MOVE.x(1 - WS) # 回到原点
+	next(East) # 右上角
+	while get_pos_y() > 0: # 右下角
+		next(South)
+	while get_pos_x() > 0: # 回到原点
+		next(West)
 
 def danger_go(destination):
 	px, py = ppz.pos()
